@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jiao Toss - 擲筊互動體驗</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #fef5e7; padding: 2em; }
+    h1 { color: #c0392b; }
+    button { padding: 1em 2em; font-size: 1.2em; margin: 1em 0.5em; }
+    .result { font-size: 1.5em; margin: 1em 0; }
+    .counter { margin-top: 2em; font-weight: bold; }
+    img { max-width: 200px; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🎲 擲筊互動體驗<br/>Jiao Toss Interactive</h1>
+  <p>點擊「擲筊」來試試看天地是否回應你的願望，<br/>結束後點選「重設」交棒給下一位玩家！</p>
+
+  <button onclick="tossJiao()">擲筊 Toss</button>
+  <button onclick="resetToss()">重設 Reset</button>
+
+  <div class="result" id="resultText">請開始擲筊吧！<br/>Start tossing!</div>
+  <img id="resultImage" src="" alt="" style="display:none;">
+  <div class="counter" id="counter">Total Tosses: 0 | Heard: 0</div>
+
+  <script>
+    let totalTosses = 0;
+    let heardCount = 0;
+
+    function tossJiao() {
+      const outcomes = [
+        {
+          label: "✅ 聖筊 | Heard!",
+          emoji: "✅",
+          heard: true,
+          img: "https://upload.wikimedia.org/wikipedia/commons/4/47/Po_Bei_Shengjiao.svg"
+        },
+        {
+          label: "❌ 陰筊 | Not heard",
+          emoji: "❌",
+          heard: false,
+          img: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Po_Bei_Yinjiao.svg"
+        },
+        {
+          label: "😆 笑筊 | Laughing",
+          emoji: "😆",
+          heard: false,
+          img: "https://upload.wikimedia.org/wikipedia/commons/9/92/Po_Bei_Smile.svg"
+        }
+      ];
+      const result = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+      totalTosses++;
+      if (result.heard) heardCount++;
+
+      document.getElementById("resultText").innerHTML = result.emoji + " " + result.label;
+      document.getElementById("resultImage").src = result.img;
+      document.getElementById("resultImage").style.display = "block";
+      document.getElementById("counter").innerText = "Total Tosses: " + totalTosses + " | Heard: " + heardCount;
+    }
+
+    function resetToss() {
+      totalTosses = 0;
+      heardCount = 0;
+      document.getElementById("resultText").innerHTML = "請開始擲筊吧！<br/>Start tossing!";
+      document.getElementById("resultImage").style.display = "none";
+      document.getElementById("counter").innerText = "Total Tosses: 0 | Heard: 0";
+    }
+  </script>
+</body>
+</html>
