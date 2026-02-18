@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jiao Toss Ultimate Worksheet Mode</title>
+<title>Blessing Card & Jiao Toss Lab</title>
 
 <style>
 body{
@@ -22,27 +22,25 @@ button{
   cursor:pointer;
 }
 
-.result{font-size:1.7em;margin:1em 0;}
-.counter{font-weight:bold;margin-top:1em;}
-
 #resultImage{
   display:block;
   margin:20px auto;
   max-width:220px;
 }
 
-#success{
-  font-size:2.3em;
-  color:#e74c3c;
+#success, #fail{
+  font-size:2.2em;
   display:none;
   margin-top:20px;
 }
 
-/* 📝 記錄區 */
-#recordBox{
-  margin-top:25px;
-  padding:15px;
+#success{color:#e74c3c;}
+#fail{color:#555;}
+
+#leaderboard{
+  margin-top:20px;
   background:white;
+  padding:15px;
   border-radius:10px;
   max-width:350px;
   margin-left:auto;
@@ -50,15 +48,14 @@ button{
   text-align:left;
 }
 
-/* 🎲 按鈕震動 */
-@keyframes shake {
-  0%{transform:translate(0,0)}
-  25%{transform:translate(4px,0)}
-  50%{transform:translate(-4px,0)}
-  75%{transform:translate(4px,0)}
-  100%{transform:translate(0,0)}
+#selfieFrame{
+  display:none;
+  margin-top:20px;
+  border:8px solid gold;
+  padding:15px;
+  font-size:1.8em;
+  background:#fff8dc;
 }
-.shake{animation:shake 0.4s;}
 
 canvas{
   position:fixed;
@@ -71,49 +68,45 @@ canvas{
 
 <body>
 
-<h1>
-<img src="https://i.postimg.cc/FRKnp3QL/Jiao-Toss.png"
-style="display:block;margin:auto;max-width:300px;">
-Blessing Card & Jiao Toss Lab
-</h1>
+<h1>🧧 Jiao Toss Challenge 🧧</h1>
 
-<p>Complete 3 Rounds and record your results!</p>
+<p>Get 3 Sheng Jiao in 3 Rounds to win!</p>
 
 <button id="tossBtn" onclick="playRound()">Start Round</button>
-<button onclick="resetGame()">Reset</button>
+<button id="newBtn" onclick="startNew()" style="display:none">
+Start New Challenge
+</button>
 
-<div class="result" id="resultText">Press Start Round</div>
+<div id="resultText">Press Start Round</div>
 <img id="resultImage" style="display:none">
 
-<div class="counter" id="counter">Round: 0 / 3</div>
+<div id="counter">Round: 0 / 3</div>
 
-<div id="recordBox">
-<b>Round Results:</b>
-<ul id="recordList"></ul>
+<div id="success">🎉 CHALLENGE COMPLETE 🎉</div>
+<div id="fail">🎮 GAME OVER — Try Again!</div>
+
+<div id="selfieFrame">
+📸 Take a photo with your success!
 </div>
 
-<div id="success">
-🎉 ALL 3 ROUNDS COMPLETE 🎉<br>
-Collect your sticker!
+<div id="leaderboard">
+🏆 Successful Players: <span id="score">0</span>
 </div>
 
-<audio id="winSound"
-src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
+<audio id="templeSound"
+src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
 <script>
 let round = 0;
+let successCount = 0;
 const maxRounds = 3;
+let score = 0;
 
 function playRound(){
 
   if(round >= maxRounds) return;
-
-  // 🎲 按鈕震動
-  const btn=document.getElementById("tossBtn");
-  btn.classList.add("shake");
-  setTimeout(()=>btn.classList.remove("shake"),400);
 
   // 📱 手機震動
   if(navigator.vibrate){navigator.vibrate(100);}
@@ -121,12 +114,14 @@ function playRound(){
   round++;
 
   const outcomes=[
-    {label:"Sheng Jiao (Good Luck)",emoji:"✅",img:"https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"},
-    {label:"Yin Jiao (Try Again)",emoji:"❌",img:"https://i.postimg.cc/kMRDYHsH/Yin-Jiao-Try-Again.png"},
-    {label:"Xiao Jiao (Smile)",emoji:"😆",img:"https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"}
+    {label:"Sheng Jiao",emoji:"✅",good:true,img:"https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"},
+    {label:"Yin Jiao",emoji:"❌",good:false,img:"https://i.postimg.cc/kMRDYHsH/Yin-Jiao-Try-Again.png"},
+    {label:"Xiao Jiao",emoji:"😆",good:false,img:"https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"}
   ];
 
   const result=outcomes[Math.floor(Math.random()*outcomes.length)];
+
+  if(result.good) successCount++;
 
   document.getElementById("resultText").innerHTML =
     "Round "+round+": "+result.emoji+" "+result.label;
@@ -136,34 +131,50 @@ function playRound(){
 
   document.getElementById("counter").innerText="Round: "+round+" / 3";
 
-  // 📝 記錄
-  const li=document.createElement("li");
-  li.textContent="Round "+round+" — "+result.label+" "+result.emoji;
-  document.getElementById("recordList").appendChild(li);
-
   if(round === maxRounds){
-    document.getElementById("success").style.display="block";
 
-    // 🎆 多段煙火
-    startFireworks();
-    setTimeout(startFireworks,700);
-    setTimeout(startFireworks,1400);
+    document.getElementById("tossBtn").style.display="none";
+    document.getElementById("newBtn").style.display="inline-block";
 
-    // 🔊 音效
-    document.getElementById("winSound").play();
+    if(successCount === 3){
 
-    btn.disabled = true;
+      // 🎉 成功
+      document.getElementById("success").style.display="block";
+      document.getElementById("selfieFrame").style.display="block";
+
+      // 🎆 煙火
+      startFireworks();
+      setTimeout(startFireworks,700);
+      setTimeout(startFireworks,1400);
+
+      // 🔔 廟宇音效
+      document.getElementById("templeSound").play();
+
+      // 🏆 排行榜
+      score++;
+      document.getElementById("score").innerText = score;
+
+    }else{
+
+      // 🎮 Game Over
+      document.getElementById("fail").style.display="block";
+    }
   }
 }
 
-function resetGame(){
+function startNew(){
   round = 0;
+  successCount = 0;
+
   document.getElementById("resultText").innerHTML="Press Start Round";
   document.getElementById("resultImage").style.display="none";
   document.getElementById("counter").innerText="Round: 0 / 3";
   document.getElementById("success").style.display="none";
-  document.getElementById("tossBtn").disabled = false;
-  document.getElementById("recordList").innerHTML="";
+  document.getElementById("fail").style.display="none";
+  document.getElementById("selfieFrame").style.display="none";
+
+  document.getElementById("tossBtn").style.display="inline-block";
+  document.getElementById("newBtn").style.display="none";
 }
 
 //// 🎆 FIREWORKS ////
