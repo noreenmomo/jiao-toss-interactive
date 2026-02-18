@@ -124,6 +124,11 @@ canvas{
 <div id="fortune"></div>
 
 <!-- 🔊 音效 -->
+
+  <!-- 🪵 第一次擲筊聲 -->
+<audio id="firstTossSound"
+src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
+  
 <!-- 🪵 擲筊聲 -->
 <audio id="tossSound"
 src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
@@ -164,7 +169,12 @@ function playRound(){
 
   if(round>=maxRounds) return;
 
+  // 🪵 Round 1 用不同音效
+if(round === 0){
+  document.getElementById("firstTossSound").play();
+}else{
   document.getElementById("tossSound").play();
+}
 
   if(navigator.vibrate) navigator.vibrate(80);
 
