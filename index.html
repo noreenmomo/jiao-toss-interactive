@@ -146,6 +146,18 @@ function getOutcome(){
 
 function playRound(){
 
+  // 🔓 只在第一次解鎖音效
+  if(!soundUnlocked){
+    const unlock = document.getElementById("celebrateSound");
+    unlock.muted = true;
+    unlock.play().then(()=>{
+      unlock.pause();
+      unlock.currentTime = 0;
+      unlock.muted = false;
+    }).catch(()=>{});
+    soundUnlocked = true;
+  }
+
   if(round>=maxRounds) return;
 
   round++;
@@ -161,6 +173,7 @@ function playRound(){
   img.classList.remove("reveal");
   void img.offsetWidth;
   img.classList.add("reveal");
+}
 
   document.getElementById("counter").innerText =
     "Round: "+round+" / 3";
