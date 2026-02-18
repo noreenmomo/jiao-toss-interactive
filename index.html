@@ -103,7 +103,7 @@ canvas{
 <div id="fortune"></div>
 
 <!-- 🥳 唯一慶祝音效 -->
-<audio id="celebrateSound"
+<audio id="celebrateSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
@@ -112,7 +112,15 @@ src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 let round=0;
 let successCount=0;
 const maxRounds=3;
-let soundUnlocked=false; // ⭐ 必須宣告
+
+let soundUnlocked=false;
+let soundReady=false;
+
+// ⭐ 等音效載入完成
+const audio=document.getElementById("celebrateSound");
+audio.addEventListener("canplaythrough",()=>{
+  soundReady=true;
+});
 
 function getOutcome(){
   const r=Math.random();
@@ -130,19 +138,21 @@ function getOutcome(){
   }
 }
 
+function unlockSound(){
+  if(!soundUnlocked && soundReady){
+    audio.muted=true;
+    audio.play().then(()=>{
+      audio.pause();
+      audio.currentTime=0;
+      audio.muted=false;
+      soundUnlocked=true;
+    }).catch(()=>{});
+  }
+}
+
 function playRound(){
 
-  // 🔓 音效解鎖（只一次）
-  if(!soundUnlocked){
-    const unlock = document.getElementById("celebrateSound");
-    unlock.muted = true;
-    unlock.play().then(()=>{
-      unlock.pause();
-      unlock.currentTime = 0;
-      unlock.muted = false;
-    }).catch(()=>{});
-    soundUnlocked = true;
-  }
+  unlockSound(); // 🔓 解鎖音效
 
   if(round>=maxRounds) return;
 
@@ -185,9 +195,10 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  const cheer=document.getElementById("celebrateSound");
-  cheer.currentTime=0;
-  cheer.play().catch(()=>{});
+  if(soundUnlocked){
+    audio.currentTime=0;
+    audio.play().catch(()=>{});
+  }
 
   startFireworks();
 
