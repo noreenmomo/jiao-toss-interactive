@@ -102,11 +102,11 @@ canvas{
 
 <div id="fortune"></div>
 
-<!-- 🎲 執爻 Toss 音效 -->
+<!-- 🎲 Toss 音效 -->
 <audio id="tossSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
 
-<!-- 🥳 成功慶祝音效 -->
+<!-- 🥳 慶祝音效 -->
 <audio id="celebrateSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
@@ -122,7 +122,7 @@ let soundUnlocked=false;
 const tossAudio=document.getElementById("tossSound");
 const celebrateAudio=document.getElementById("celebrateSound");
 
-// 🔓 解鎖所有音效
+// 🔓 解鎖音效（手機必要）
 function unlockSound(){
   if(!soundUnlocked){
     [tossAudio, celebrateAudio].forEach(a=>{
@@ -159,7 +159,7 @@ function playRound(){
 
   if(round>=maxRounds) return;
 
-  // 🎲 每回合播放執爻聲
+  // 🎲 每回合執爻聲
   tossAudio.currentTime=0;
   tossAudio.play().catch(()=>{});
 
@@ -189,7 +189,7 @@ function playRound(){
 
     if(successCount===3){
       showSuccess();
-      btn.style.display="none";
+      btn.style.display="none"; // ⭐ 成功 → 沒有 TRY AGAIN 按鈕
     }else{
       showFail();
       btn.innerText="TRY AGAIN";
@@ -202,9 +202,13 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // 🥳 成功慶祝音
-  celebrateAudio.currentTime=0;
-  celebrateAudio.play().catch(()=>{});
+  // ⭐ 判斷畫面沒有 TRY AGAIN 按鈕才播放慶祝音
+  const btn=document.getElementById("actionBtn");
+
+  if(btn.style.display === "none"){
+    celebrateAudio.currentTime=0;
+    celebrateAudio.play().catch(()=>{});
+  }
 
   startFireworks();
 
