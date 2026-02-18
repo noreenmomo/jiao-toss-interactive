@@ -15,21 +15,6 @@ body{
   padding:20px;
 }
 
-body::before{
-  content:"";
-  position:fixed;
-  width:200%;
-  height:200%;
-  background:radial-gradient(circle, rgba(255,215,0,0.3), transparent);
-  animation: glow 6s infinite linear;
-  z-index:-1;
-}
-
-@keyframes glow{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
-}
-
 .instructions{
   background:white;
   padding:12px;
@@ -127,6 +112,7 @@ src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 let round=0;
 let successCount=0;
 const maxRounds=3;
+let soundUnlocked=false; // ⭐ 必須宣告
 
 function getOutcome(){
   const r=Math.random();
@@ -146,7 +132,7 @@ function getOutcome(){
 
 function playRound(){
 
-  // 🔓 只在第一次解鎖音效
+  // 🔓 音效解鎖（只一次）
   if(!soundUnlocked){
     const unlock = document.getElementById("celebrateSound");
     unlock.muted = true;
@@ -173,7 +159,6 @@ function playRound(){
   img.classList.remove("reveal");
   void img.offsetWidth;
   img.classList.add("reveal");
-}
 
   document.getElementById("counter").innerText =
     "Round: "+round+" / 3";
@@ -200,7 +185,6 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // 🥳 唯一慶祝音效
   const cheer=document.getElementById("celebrateSound");
   cheer.currentTime=0;
   cheer.play().catch(()=>{});
@@ -213,8 +197,6 @@ function showSuccess(){
   const fortuneEl=document.getElementById("fortune");
   fortuneEl.innerText="Your Blessing: "+f;
   fortuneEl.style.display="block";
-
-  // 🧧 自動滾動到祝福
   fortuneEl.scrollIntoView({behavior:"smooth"});
 }
 
