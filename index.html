@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -169,11 +169,10 @@ function playRound(){
 
   if(round>=maxRounds) return;
 
-  // 🪵 Round 1 用不同音效
-if(round === 0){
-  document.getElementById("firstTossSound").play();
-}else{
-  document.getElementById("tossSound").play();
+// 🪵 每次執筊都播放同一個聲音
+const sound = document.getElementById("firstTossSound");
+sound.currentTime = 0; // 防止快速連按卡住
+sound.play();
 }
 
   if(navigator.vibrate) navigator.vibrate(80);
