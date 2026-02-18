@@ -27,7 +27,7 @@
   <p>One flat side up + one round side up</p> 
   <p>Complete the challenge to earn your sticker and bring good luck into the new year!</p> 
   <p>After finishing, click “Reset” to let the next player have a turn!</p>
-</body>
+
 
   <button onclick="tossJiao()">Toss</button>
   <button onclick="resetToss()">Reset</button>
@@ -48,7 +48,7 @@
   heard: true,
   style: "text-align:center;",
   img: "https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"
-}
+},
         {
           label: "❌ Yin Jiao (Try Again)",
           emoji: "❌",
@@ -62,8 +62,8 @@
           heard: false,
             style: "text-align:center;",
             img: "https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"
-        }
-      ];
+       }
+];
       const result = outcomes[Math.floor(Math.random() * outcomes.length)];
 
       totalTosses++;
