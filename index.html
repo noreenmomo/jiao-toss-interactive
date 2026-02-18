@@ -43,22 +43,25 @@
     function tossJiao() {
       const outcomes = [
         {
-          label: "✅ Sheng Jiao (Good Luck)",
-          emoji: "✅",
-          heard: true,
-          img: "https://i.postimg.cc/FRKnp3QL/Jiao-Toss.png"
-        },
+  label: "✅ Sheng Jiao (Good Luck)",
+  emoji: "✅",
+  heard: true,
+  style: "text-align:center;",
+  img: "https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"
+}
         {
           label: "❌ Yin Jiao (Try Again)",
           emoji: "❌",
           heard: false,
-          img: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Po_Bei_Yinjiao.svg"
+          style: "text-align:center;",
+          img: "https://i.postimg.cc/kMRDYHsH/Yin-Jiao-Try-Again.png"
         },
         {
           label: "😆 Xiao Jiao (Smile)",
           emoji: "😆",
           heard: false,
-          img: "https://upload.wikimedia.org/wikipedia/commons/9/92/Po_Bei_Smile.svg"
+            style: "text-align:center;",
+            img: "https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"
         }
       ];
       const result = outcomes[Math.floor(Math.random() * outcomes.length)];
