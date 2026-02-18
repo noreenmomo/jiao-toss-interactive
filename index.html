@@ -36,13 +36,10 @@ body::before{
   to{transform:rotate(360deg)}
 }
 
-h1{color:#c0392b;}
-
 button{
   padding:1em 2em;
   font-size:1.2em;
   margin:0.5em;
-  cursor:pointer;
 }
 
 #jiao{
@@ -50,19 +47,17 @@ button{
   transition: transform 0.6s;
 }
 
-.flip{
-  transform: rotateY(720deg);
-}
+.flip{transform: rotateY(720deg);}
 
 #resultImage{max-width:220px;margin:10px;}
 
 #success{font-size:2em;color:#e74c3c;display:none;}
+#fail{font-size:2em;color:#555;display:none;}
 
-#recordBox{
-  background:white;
-  padding:12px;
-  border-radius:10px;
-  text-align:left;
+#fortune{
+  font-size:1.8em;
+  color:#b8860b;
+  display:none;
   margin-top:10px;
 }
 
@@ -79,83 +74,84 @@ canvas{
 
 <h1>🧧 Blessing Card & Jiao Toss Lab 🧧</h1>
 
-<!-- 🏫 教學說明 -->
-<div>
-<b>🎯 GOAL:</b> Get 3 Sheng Jiao to win<br>
-<b>🧧 WHAT IS SHENG JIAO:</b> One flat side + one round side<br>
-<b>📋 STEPS:</b> Toss → Observe → Record results
-</div>
-
-<button id="tossBtn" onclick="playRound()">TOSS</button>
+<button onclick="playRound()">TOSS</button>
 
 <img id="jiao" src="https://i.postimg.cc/FRKnp3QL/Jiao-Toss.png">
 
 <div id="resultText">Press TOSS</div>
+<img id="resultImage" style="display:none">
+
 <div id="counter">Round: 0 / 3</div>
 
-<!-- 📝 記錄 -->
-<div id="recordBox">
-<b>Round Results:</b>
-<ul id="recordList"></ul>
-</div>
-
 <div id="success">🎉 SUCCESS 🎉</div>
+<div id="fail">🎮 TRY AGAIN</div>
 
-<div>🏆 Successful Players: <span id="score">0</span></div>
+<div id="fortune"></div>
 
+<!-- 🔊 音效 -->
 <audio id="gong"
 src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
+
+<audio id="failSound"
+src="https://assets.mixkit.co/active_storage/sfx/2958/2958-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
 <script>
 let round=0;
 let successCount=0;
-let totalWins=0;
 const maxRounds=3;
 
 // 🎯 成功率 80%
 function getOutcome(){
-  return Math.random()<0.8;
+
+  const r=Math.random();
+
+  if(r<0.8){
+    return {label:"Sheng Jiao (Good Luck)",emoji:"✅",good:true,
+    img:"https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"}
+  }
+  else if(r<0.9){
+    return {label:"Yin Jiao (Try Again)",emoji:"❌",good:false,
+    img:"https://i.postimg.cc/kMRDYHsH/Yin-Jiao-Try-Again.png"}
+  }
+  else{
+    return {label:"Xiao Jiao (Smile)",emoji:"😆",good:false,
+    img:"https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"}
+  }
 }
 
 function playRound(){
 
   if(round>=maxRounds) return;
 
-  // 🔔 開場 Gong
   document.getElementById("gong").play();
 
-  // 📳 手機震動
   if(navigator.vibrate) navigator.vibrate(80);
 
-  // 🎲 Toss 按下動畫
   document.getElementById("jiao").classList.add("flip");
   setTimeout(()=>document.getElementById("jiao").classList.remove("flip"),600);
 
   round++;
 
-  const good = getOutcome();
+  const result=getOutcome();
 
-  let label = good ? "Sheng Jiao ✅" : "Not Sheng Jiao ❌";
-
-  if(good) successCount++;
+  if(result.good) successCount++;
 
   document.getElementById("resultText").innerText =
-    "Round "+round+": "+label;
+    "Round "+round+": "+result.emoji+" "+result.label;
 
-  document.getElementById("counter").innerText =
-    "Round: "+round+" / 3";
+  document.getElementById("resultImage").src=result.img;
+  document.getElementById("resultImage").style.display="block";
 
-  // 📝 記錄
-  const li=document.createElement("li");
-  li.textContent="Round "+round+" — "+label;
-  document.getElementById("recordList").appendChild(li);
+  document.getElementById("counter").innerText="Round: "+round+" / 3";
 
   if(round===maxRounds){
 
     if(successCount===3){
       showSuccess();
+    }else{
+      showFail();
     }
 
     round=maxRounds;
@@ -164,11 +160,28 @@ function playRound(){
 
 function showSuccess(){
   document.getElementById("success").style.display="block";
-
-  totalWins++;
-  document.getElementById("score").innerText=totalWins;
-
   startFireworks();
+
+  // 🧧 抽祝福籤
+  const fortunes=[
+    "🧧 Prosperity",
+    "💖 Happiness",
+    "📚 Academic Success",
+    "💪 Health",
+    "🌸 Good Fortune"
+  ];
+
+  const f=fortunes[Math.floor(Math.random()*fortunes.length)];
+
+  document.getElementById("fortune").innerText =
+    "Your Blessing: " + f;
+
+  document.getElementById("fortune").style.display="block";
+}
+
+function showFail(){
+  document.getElementById("fail").style.display="block";
+  document.getElementById("failSound").play();
 }
 
 // 📱 Fullscreen kiosk
