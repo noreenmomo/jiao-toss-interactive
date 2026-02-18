@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jiao Toss Challenge</title>
+<title>Jiao Toss Arcade Deluxe</title>
 
 <style>
 body{
@@ -44,27 +44,48 @@ canvas{
   left:0;
   pointer-events:none;
 }
+
+/* 🎲 按鈕震動動畫 */
+@keyframes shake {
+  0%{transform:translate(0,0)}
+  25%{transform:translate(4px,0)}
+  50%{transform:translate(-4px,0)}
+  75%{transform:translate(4px,0)}
+  100%{transform:translate(0,0)}
+}
+
+.shake{
+  animation: shake 0.4s;
+}
 </style>
 </head>
 
 <body>
 
 <h1>
-<img src="https://i.postimg.cc/JhtBrz3V/Jiao-Toss.png"
-style="display:block;margin:auto;max-width:100px;">
+<img src="https://i.postimg.cc/FRKnp3QL/Jiao-Toss.png"
+style="display:block;margin:auto;max-width:300px;">
 Blessing Card & Jiao Toss Lab
 </h1>
 
 <p>Get 3 Sheng Jiao in a row to win!</p>
 
-<button onclick="tossJiao()">Toss</button>
+<button id="tossBtn" onclick="tossJiao()">Toss</button>
 <button onclick="resetGame()">Reset</button>
 
 <div class="result" id="resultText">Start tossing!</div>
 <img id="resultImage" style="display:none">
-<div class="counter" id="counter">Total: 0 | Sheng Jiao Streak: 0</div>
+<div class="counter" id="counter">
+Total Tosses: 0 | Consecutive Sheng Jiao (連續聖筊): 0
+</div>
 
-<div id="success">🎉 CHALLENGE COMPLETE 🎉<br>Collect your sticker!</div>
+<div id="success">
+🎉 CHALLENGE COMPLETE 🎉<br>
+Collect your sticker!
+</div>
+
+<audio id="winSound"
+src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
@@ -73,6 +94,16 @@ let total = 0;
 let streak = 0;
 
 function tossJiao(){
+
+  // 🎲 按鈕震動動畫
+  const btn=document.getElementById("tossBtn");
+  btn.classList.add("shake");
+  setTimeout(()=>btn.classList.remove("shake"),400);
+
+  // 📱 手機震動
+  if(navigator.vibrate){
+    navigator.vibrate(100);
+  }
 
   const outcomes=[
     {label:"Sheng Jiao (Good Luck)",emoji:"✅",heard:true,img:"https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"},
@@ -90,15 +121,26 @@ function tossJiao(){
     streak=0;
   }
 
-  document.getElementById("resultText").innerHTML=result.emoji+" "+result.label;
-  document.getElementById("resultImage").src=result.img;
+  document.getElementById("resultText").innerHTML =
+    result.emoji+" "+result.label;
+
+  document.getElementById("resultImage").src = result.img;
   document.getElementById("resultImage").style.display="block";
-  document.getElementById("counter").innerText=
-    "Total: "+total+" | Sheng Jiao Streak: "+streak;
+
+  document.getElementById("counter").innerText =
+    "Total Tosses: "+total+
+    " | Consecutive Sheng Jiao (連續聖筊): "+streak;
 
   if(streak>=3){
     document.getElementById("success").style.display="block";
+
+    // 🎆 多段煙火
     startFireworks();
+    setTimeout(startFireworks,700);
+    setTimeout(startFireworks,1400);
+
+    // 🔊 成功音效
+    document.getElementById("winSound").play();
   }
 }
 
@@ -107,11 +149,12 @@ function resetGame(){
   streak=0;
   document.getElementById("resultText").innerHTML="Start tossing!";
   document.getElementById("resultImage").style.display="none";
-  document.getElementById("counter").innerText="Total: 0 | Sheng Jiao Streak: 0";
+  document.getElementById("counter").innerText=
+    "Total Tosses: 0 | Consecutive Sheng Jiao (連續聖筊): 0";
   document.getElementById("success").style.display="none";
 }
 
-//// 🎆 FIREWORKS ANIMATION ////
+//// 🎆 FIREWORKS ////
 
 const canvas=document.getElementById("fireworks");
 const ctx=canvas.getContext("2d");
