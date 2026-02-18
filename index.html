@@ -12,7 +12,6 @@ body{
   background:radial-gradient(circle,#fff6cc,#f4d03f);
   min-height:100vh;
   overflow:auto;
-  display:block;
   padding:20px;
 }
 
@@ -118,9 +117,9 @@ canvas{
 
 <div id="fortune"></div>
 
-<!-- 🔊 成功音效 -->
-<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
-<audio id="celebrateSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<!-- 🥳 唯一慶祝音效 -->
+<audio id="celebrateSound"
+src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
@@ -150,7 +149,6 @@ function playRound(){
   if(round>=maxRounds) return;
 
   round++;
-
   const result=getOutcome();
 
   if(result.good) successCount++;
@@ -189,25 +187,22 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // 🔔 成功 Gong
-  const gong = document.getElementById("successSound");
-  gong.currentTime = 0;
-  gong.play().catch(()=>{});
-
-  // 🥳 慶祝音（延遲）
-  setTimeout(()=>{
-    const cheer = document.getElementById("celebrateSound");
-    cheer.currentTime = 0;
-    cheer.play().catch(()=>{});
-  }, 500);
+  // 🥳 唯一慶祝音效
+  const cheer=document.getElementById("celebrateSound");
+  cheer.currentTime=0;
+  cheer.play().catch(()=>{});
 
   startFireworks();
 
   const fortunes=["🧧 Prosperity","💖 Happiness","📚 Academic Success","💪 Health","🌸 Good Fortune"];
   const f=fortunes[Math.floor(Math.random()*fortunes.length)];
 
-  document.getElementById("fortune").innerText="Your Blessing: "+f;
-  document.getElementById("fortune").style.display="block";
+  const fortuneEl=document.getElementById("fortune");
+  fortuneEl.innerText="Your Blessing: "+f;
+  fortuneEl.style.display="block";
+
+  // 🧧 自動滾動到祝福
+  fortuneEl.scrollIntoView({behavior:"smooth"});
 }
 
 function showFail(){
