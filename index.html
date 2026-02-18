@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -18,7 +18,6 @@ body{
   align-items:center;
 }
 
-/* 🧧 金光背景 */
 body::before{
   content:"";
   position:fixed;
@@ -33,8 +32,6 @@ body::before{
   from{transform:rotate(0deg)}
   to{transform:rotate(360deg)}
 }
-
-h1{color:#c0392b;}
 
 .instructions{
   background:white;
@@ -124,26 +121,10 @@ canvas{
 <div id="fortune"></div>
 
 <!-- 🔊 音效 -->
-
-  <!-- 🪵 第一次擲筊聲 -->
-<audio id="firstTossSound"
-src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
-  
-<!-- 🪵 擲筊聲 -->
-<audio id="tossSound"
-src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
-
-<!-- 🔔 成功 -->
-<audio id="successSound"
-src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
-
-  <!-- 🥳 慶祝音效 -->
-<audio id="celebrateSound"
-src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-
-<!-- 😅 失敗可愛音 -->
-<audio id="failSound"
-src="https://assets.mixkit.co/active_storage/sfx/2098/2098-preview.mp3"></audio>
+<audio id="firstTossSound" src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
+<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
+<audio id="celebrateSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="failSound" src="https://assets.mixkit.co/active_storage/sfx/2098/2098-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
@@ -151,8 +132,8 @@ src="https://assets.mixkit.co/active_storage/sfx/2098/2098-preview.mp3"></audio>
 let round=0;
 let successCount=0;
 const maxRounds=3;
+let soundUnlocked=false; // ⭐ 必要
 
-// 🎯 成功率 80%
 function getOutcome(){
   const r=Math.random();
   if(r<0.8){
@@ -173,23 +154,21 @@ function playRound(){
 
   if(round>=maxRounds) return;
 
-// 🪵 每次執筊都播放同一個聲音
-const sound = document.getElementById("firstTossSound");
-sound.currentTime = 0; // 防止快速連按卡住
-// 🪵 擲筊聲
-sound.play();
+  const sound=document.getElementById("firstTossSound");
+  sound.currentTime=0;
+  sound.play();
 
-// 🔓 只在第一次解鎖慶祝音效
-if(!soundUnlocked){
-  const unlock = document.getElementById("celebrateSound");
-  unlock.muted = true;
-  unlock.play().then(()=>{
-    unlock.pause();
-    unlock.currentTime = 0;
-    unlock.muted = false;
-  }).catch(()=>{});
-  soundUnlocked = true;
-}
+  // 🔓 解鎖慶祝音效
+  if(!soundUnlocked){
+    const unlock=document.getElementById("celebrateSound");
+    unlock.muted=true;
+    unlock.play().then(()=>{
+      unlock.pause();
+      unlock.currentTime=0;
+      unlock.muted=false;
+    }).catch(()=>{});
+    soundUnlocked=true;
+  }
 
   if(navigator.vibrate) navigator.vibrate(80);
 
@@ -216,7 +195,6 @@ if(!soundUnlocked){
   document.getElementById("recordList").appendChild(li);
 
   if(round===maxRounds){
-
     const btn=document.getElementById("actionBtn");
 
     if(successCount===3){
@@ -234,34 +212,22 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // 🔔 Gong
-document.getElementById("successSound").play();
+  document.getElementById("successSound").play();
 
-// 🥳 慶祝音（延遲）
-setTimeout(() => {
-  const cheer = document.getElementById("celebrateSound");
-  cheer.currentTime = 0;
-  cheer.play();
-}, 400);  
+  setTimeout(()=>{
+    const cheer=document.getElementById("celebrateSound");
+    cheer.currentTime=0;
+    cheer.play();
+  },400);
 
-  // 🎆 煙火
   startFireworks();
   setTimeout(startFireworks,700);
   setTimeout(startFireworks,1400);
 
-  const fortunes=[
-    "🧧 Prosperity",
-    "💖 Happiness",
-    "📚 Academic Success",
-    "💪 Health",
-    "🌸 Good Fortune"
-  ];
-
+  const fortunes=["🧧 Prosperity","💖 Happiness","📚 Academic Success","💪 Health","🌸 Good Fortune"];
   const f=fortunes[Math.floor(Math.random()*fortunes.length)];
 
-  document.getElementById("fortune").innerText =
-    "Your Blessing: " + f;
-
+  document.getElementById("fortune").innerText="Your Blessing: "+f;
   document.getElementById("fortune").style.display="block";
 }
 
@@ -270,7 +236,6 @@ function showFail(){
   document.getElementById("failSound").play();
 }
 
-// 🔄 Reset
 function resetGame(){
   round=0;
   successCount=0;
@@ -283,19 +248,18 @@ function resetGame(){
   document.getElementById("fortune").style.display="none";
 
   const btn=document.getElementById("actionBtn");
+  btn.style.display="inline-block"; // ⭐ 修正
   btn.innerText="TOSS";
   btn.onclick=playRound;
 }
 
-// 📱 Fullscreen kiosk
 function enterFullscreen(){
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen();
   }
 }
 
-//// 🎆 FIREWORKS ////
-
+// 🎆 FIREWORKS
 const canvas=document.getElementById("fireworks");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
