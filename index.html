@@ -10,10 +10,8 @@ body{
   font-family:sans-serif;
   text-align:center;
   background:radial-gradient(circle,#fff6cc,#f4d03f);
-
   height:100vh;
   overflow:hidden;
-
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -36,7 +34,7 @@ body::before{
   to{transform:rotate(360deg)}
 }
 
-h1{color:#c0392b;margin-bottom:8px;}
+h1{color:#c0392b;}
 
 .instructions{
   background:white;
@@ -85,6 +83,13 @@ button{
   margin-top:10px;
   max-width:420px;
 }
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
+}
 </style>
 </head>
 
@@ -92,7 +97,6 @@ button{
 
 <h1>Blessing Card & Jiao Toss Lab</h1>
 
-<!-- 📋 說明 -->
 <div class="instructions">
 <b>🎯 GOAL:</b> Get 3 Sheng Jiao to win<br>
 <b>🧧 WHAT IS SHENG JIAO:</b> One flat side + one round side<br>
@@ -102,14 +106,13 @@ button{
 3. Record each round on your worksheet
 </div>
 
-<button onclick="playRound()">TOSS</button>
+<button id="actionBtn" onclick="playRound()">TOSS</button>
 
 <div id="resultText">Press TOSS</div>
 <img id="resultImage">
 
 <div id="counter">Round: 0 / 3</div>
 
-<!-- 📝 Round 記錄 -->
 <div id="recordBox">
 <b>Round Results:</b>
 <ul id="recordList"></ul>
@@ -121,15 +124,19 @@ button{
 <div id="fortune"></div>
 
 <!-- 🔊 音效 -->
+<!-- 🪵 擲筊聲 -->
 <audio id="tossSound"
-src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
 
+<!-- 🔔 成功 -->
 <audio id="successSound"
 src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
 
-<!-- 🐣 可愛失敗音 -->
+<!-- 😅 失敗可愛音 -->
 <audio id="failSound"
 src="https://assets.mixkit.co/active_storage/sfx/2098/2098-preview.mp3"></audio>
+
+<canvas id="fireworks"></canvas>
 
 <script>
 let round=0;
@@ -179,26 +186,32 @@ function playRound(){
   document.getElementById("counter").innerText =
     "Round: "+round+" / 3";
 
-  // 📝 記錄
   const li=document.createElement("li");
   li.textContent="Round "+round+" — "+result.label+" "+result.emoji;
   document.getElementById("recordList").appendChild(li);
 
   if(round===maxRounds){
 
+    const btn=document.getElementById("actionBtn");
+
     if(successCount===3){
       showSuccess();
+      btn.style.display="none";
     }else{
       showFail();
+      btn.innerText="TRY AGAIN";
+      btn.onclick=resetGame;
     }
-
-    round=maxRounds;
   }
 }
 
 function showSuccess(){
   document.getElementById("success").style.display="block";
   document.getElementById("successSound").play();
+
+  startFireworks();
+  setTimeout(startFireworks,700);
+  setTimeout(startFireworks,1400);
 
   const fortunes=[
     "🧧 Prosperity",
@@ -221,10 +234,67 @@ function showFail(){
   document.getElementById("failSound").play();
 }
 
+// 🔄 Reset
+function resetGame(){
+  round=0;
+  successCount=0;
+
+  document.getElementById("resultText").innerText="Press TOSS";
+  document.getElementById("counter").innerText="Round: 0 / 3";
+  document.getElementById("recordList").innerHTML="";
+  document.getElementById("success").style.display="none";
+  document.getElementById("fail").style.display="none";
+  document.getElementById("fortune").style.display="none";
+
+  const btn=document.getElementById("actionBtn");
+  btn.innerText="TOSS";
+  btn.onclick=playRound;
+}
+
 // 📱 Fullscreen kiosk
 function enterFullscreen(){
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen();
+  }
+}
+
+//// 🎆 FIREWORKS ////
+
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function startFireworks(){
+  for(let i=0;i<120;i++){
+    particles.push({
+      x:canvas.width/2,
+      y:canvas.height/2,
+      angle:Math.random()*2*Math.PI,
+      speed:Math.random()*6+2
+    });
+  }
+  animateFireworks();
+}
+
+function animateFireworks(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.x+=Math.cos(p.angle)*p.speed;
+    p.y+=Math.sin(p.angle)*p.speed;
+    p.speed*=0.96;
+
+    ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+    ctx.fillRect(p.x,p.y,3,3);
+  });
+
+  particles=particles.filter(p=>p.speed>0.5);
+
+  if(particles.length>0){
+    requestAnimationFrame(animateFireworks);
   }
 }
 </script>
