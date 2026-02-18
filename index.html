@@ -137,6 +137,10 @@ src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
 <audio id="successSound"
 src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
 
+  <!-- 🥳 慶祝音效 -->
+<audio id="celebrateSound"
+src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+
 <!-- 😅 失敗可愛音 -->
 <audio id="failSound"
 src="https://assets.mixkit.co/active_storage/sfx/2098/2098-preview.mp3"></audio>
@@ -214,9 +218,16 @@ sound.play();
 }
 
 function showSuccess(){
+
   document.getElementById("success").style.display="block";
+
+  // 🔔 Gong
   document.getElementById("successSound").play();
 
+  // 🥳 慶祝音
+  document.getElementById("celebrateSound").play();
+
+  // 🎆 煙火
   startFireworks();
   setTimeout(startFireworks,700);
   setTimeout(startFireworks,1400);
