@@ -187,9 +187,9 @@ if(!soundUnlocked){
     unlock.pause();
     unlock.currentTime = 0;
     unlock.muted = false;
-  });
+  }).catch(()=>{});
   soundUnlocked = true;
-};
+}
 
   if(navigator.vibrate) navigator.vibrate(80);
 
