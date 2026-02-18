@@ -176,7 +176,20 @@ function playRound(){
 // 🪵 每次執筊都播放同一個聲音
 const sound = document.getElementById("firstTossSound");
 sound.currentTime = 0; // 防止快速連按卡住
+// 🪵 擲筊聲
 sound.play();
+
+// 🔓 只在第一次解鎖慶祝音效
+if(!soundUnlocked){
+  const unlock = document.getElementById("celebrateSound");
+  unlock.muted = true;
+  unlock.play().then(()=>{
+    unlock.pause();
+    unlock.currentTime = 0;
+    unlock.muted = false;
+  });
+  soundUnlocked = true;
+};
 
   if(navigator.vibrate) navigator.vibrate(80);
 
@@ -222,10 +235,14 @@ function showSuccess(){
   document.getElementById("success").style.display="block";
 
   // 🔔 Gong
-  document.getElementById("successSound").play();
+document.getElementById("successSound").play();
 
-  // 🥳 慶祝音
-  document.getElementById("celebrateSound").play();
+// 🥳 慶祝音（延遲）
+setTimeout(() => {
+  const cheer = document.getElementById("celebrateSound");
+  cheer.currentTime = 0;
+  cheer.play();
+}, 400);  
 
   // 🎆 煙火
   startFireworks();
