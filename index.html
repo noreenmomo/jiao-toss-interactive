@@ -16,7 +16,11 @@
 </head>
 <body>
   <h1>🎲<br/>Blessing Card & Jiao Toss Lab</h1>
-  <p>Click “Toss” to see if you can land a successful front-and-back cup! Try to get three successful results to earn a Blessing Card. After finishing, click “Reset” to let the next player have a turn!</p>
+        <p>Click “Toss” to get 3 successful tosses to complete the challenge!</p> 
+        <p>A successful toss means:</p> 
+        <p>One flat side up + one round side up </p> 
+        <p>Complete the challenge to earn your sticker and bring good luck into the new year!</p> 
+        <p>After finishing, click “Reset” to let the next player have a turn!</p>
 
   <button onclick="tossJiao()">Toss</button>
   <button onclick="resetToss()">Reset</button>
@@ -32,19 +36,19 @@
     function tossJiao() {
       const outcomes = [
         {
-          label: "✅ 正反杯 | Front-and-back cup!",
+          label: "✅ Sheng Jiao (Good Luck)",
           emoji: "✅",
           heard: true,
           img: "https://upload.wikimedia.org/wikipedia/commons/4/47/Po_Bei_Shengjiao.svg"
         },
         {
-          label: "❌ 双反杯 | Double back",
+          label: "❌ Yin Jiao (Try Again)",
           emoji: "❌",
           heard: false,
           img: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Po_Bei_Yinjiao.svg"
         },
         {
-          label: "😆 双正杯 | Double front",
+          label: "😆 Xiao Jiao (Smile)",
           emoji: "😆",
           heard: false,
           img: "https://upload.wikimedia.org/wikipedia/commons/9/92/Po_Bei_Smile.svg"
