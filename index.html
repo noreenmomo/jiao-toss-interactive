@@ -102,7 +102,11 @@ canvas{
 
 <div id="fortune"></div>
 
-<!-- 🥳 唯一慶祝音效 -->
+<!-- 🎲 執爻 Toss 音效 -->
+<audio id="tossSound" preload="auto"
+src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
+
+<!-- 🥳 成功慶祝音效 -->
 <audio id="celebrateSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
@@ -114,13 +118,24 @@ let successCount=0;
 const maxRounds=3;
 
 let soundUnlocked=false;
-let soundReady=false;
 
-// ⭐ 等音效載入完成
-const audio=document.getElementById("celebrateSound");
-audio.addEventListener("canplaythrough",()=>{
-  soundReady=true;
-});
+const tossAudio=document.getElementById("tossSound");
+const celebrateAudio=document.getElementById("celebrateSound");
+
+// 🔓 解鎖所有音效
+function unlockSound(){
+  if(!soundUnlocked){
+    [tossAudio, celebrateAudio].forEach(a=>{
+      a.muted=true;
+      a.play().then(()=>{
+        a.pause();
+        a.currentTime=0;
+        a.muted=false;
+      }).catch(()=>{});
+    });
+    soundUnlocked=true;
+  }
+}
 
 function getOutcome(){
   const r=Math.random();
@@ -138,23 +153,15 @@ function getOutcome(){
   }
 }
 
-function unlockSound(){
-  if(!soundUnlocked && soundReady){
-    audio.muted=true;
-    audio.play().then(()=>{
-      audio.pause();
-      audio.currentTime=0;
-      audio.muted=false;
-      soundUnlocked=true;
-    }).catch(()=>{});
-  }
-}
-
 function playRound(){
 
-  unlockSound(); // 🔓 解鎖音效
+  unlockSound();
 
   if(round>=maxRounds) return;
+
+  // 🎲 每回合播放執爻聲
+  tossAudio.currentTime=0;
+  tossAudio.play().catch(()=>{});
 
   round++;
   const result=getOutcome();
@@ -195,10 +202,9 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  if(soundUnlocked){
-    audio.currentTime=0;
-    audio.play().catch(()=>{});
-  }
+  // 🥳 成功慶祝音
+  celebrateAudio.currentTime=0;
+  celebrateAudio.play().catch(()=>{});
 
   startFireworks();
 
