@@ -9,7 +9,8 @@
 body{
   font-family:sans-serif;
   text-align:center;
-  background:#fef5e7;
+  background:radial-gradient(circle,#fff6cc,#f4d03f);
+
   height:100vh;
   overflow:hidden;
 
@@ -19,183 +20,202 @@ body{
   align-items:center;
 }
 
+/* 🧧 金光背景 */
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle, rgba(255,215,0,0.3), transparent);
+  animation: glow 6s infinite linear;
+  z-index:-1;
+}
+
+@keyframes glow{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+
 h1{color:#c0392b;}
 
 button{
-  padding:0.9em 1.8em;
-  font-size:1.1em;
-  margin:0.4em;
+  padding:1em 2em;
+  font-size:1.2em;
+  margin:0.5em;
   cursor:pointer;
 }
 
-#resultImage{max-width:200px;margin:10px;}
-
-#success,#fail{font-size:2em;display:none;}
-#success{color:#e74c3c;}
-
-#blessing{
-  display:none;
-  font-size:1.6em;
-  margin-top:10px;
-  color:#b8860b;
+#jiao{
+  width:220px;
+  transition: transform 0.6s;
 }
 
-#qr{
-  display:none;
-  margin-top:10px;
+.flip{
+  transform: rotateY(720deg);
 }
 
-.controls{
+#resultImage{max-width:220px;margin:10px;}
+
+#success{font-size:2em;color:#e74c3c;display:none;}
+
+#recordBox{
   background:white;
-  padding:10px;
+  padding:12px;
   border-radius:10px;
-  margin-bottom:10px;
+  text-align:left;
+  margin-top:10px;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
 }
 </style>
 </head>
 
-<body>
+<body onclick="enterFullscreen()">
 
 <h1>🧧 Blessing Card & Jiao Toss Lab 🧧</h1>
 
-<div class="controls">
-🎯 Success Rate:
-<select id="rate">
-<option value="0.45">Normal</option>
-<option value="0.65" selected>Lucky</option>
-<option value="0.85">Very Lucky</option>
-</select>
-
-<button onclick="activateLucky()">🍀 Lucky Mode</button>
-</div>
-
+<!-- 🏫 教學說明 -->
 <div>
-<button id="tossBtn" onclick="playRound()">Start Round</button>
-<button id="newBtn" onclick="startNew()" style="display:none">
-Start New Challenge
-</button>
+<b>🎯 GOAL:</b> Get 3 Sheng Jiao to win<br>
+<b>🧧 WHAT IS SHENG JIAO:</b> One flat side + one round side<br>
+<b>📋 STEPS:</b> Toss → Observe → Record results
 </div>
 
-<div id="resultText">Press Start Round</div>
-<img id="resultImage" style="display:none">
+<button id="tossBtn" onclick="playRound()">TOSS</button>
 
+<img id="jiao" src="https://i.postimg.cc/FRKnp3QL/Jiao-Toss.png">
+
+<div id="resultText">Press TOSS</div>
 <div id="counter">Round: 0 / 3</div>
 
+<!-- 📝 記錄 -->
+<div id="recordBox">
+<b>Round Results:</b>
+<ul id="recordList"></ul>
+</div>
+
 <div id="success">🎉 SUCCESS 🎉</div>
-<div id="fail">🎮 GAME OVER</div>
 
-<div id="blessing"></div>
+<div>🏆 Successful Players: <span id="score">0</span></div>
 
-<img id="qr">
+<audio id="gong"
+src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
+
+<canvas id="fireworks"></canvas>
 
 <script>
-let round = 0;
-let successCount = 0;
-const maxRounds = 3;
+let round=0;
+let successCount=0;
+let totalWins=0;
+const maxRounds=3;
 
-let luckyBoost = false;
-
+// 🎯 成功率 80%
 function getOutcome(){
-
-  let rate = parseFloat(document.getElementById("rate").value);
-
-  if(luckyBoost) rate = 0.95;
-
-  const r = Math.random();
-
-  if(r < rate){
-    return {label:"Sheng Jiao",emoji:"✅",good:true,
-    img:"https://i.postimg.cc/Pf7rmMk8/Sheng-Jiao-Good-Luck.png"}
-  }
-  else if(r < rate + 0.2){
-    return {label:"Yin Jiao",emoji:"❌",good:false,
-    img:"https://i.postimg.cc/kMRDYHsH/Yin-Jiao-Try-Again.png"}
-  }
-  else{
-    return {label:"Xiao Jiao",emoji:"😆",good:false,
-    img:"https://i.postimg.cc/FHVYgJpv/Xiao-Jiao-Smile.png"}
-  }
+  return Math.random()<0.8;
 }
 
 function playRound(){
 
-  if(round >= maxRounds) return;
+  if(round>=maxRounds) return;
 
-  if(navigator.vibrate){navigator.vibrate(100);}
+  // 🔔 開場 Gong
+  document.getElementById("gong").play();
+
+  // 📳 手機震動
+  if(navigator.vibrate) navigator.vibrate(80);
+
+  // 🎲 Toss 按下動畫
+  document.getElementById("jiao").classList.add("flip");
+  setTimeout(()=>document.getElementById("jiao").classList.remove("flip"),600);
 
   round++;
 
-  const result = getOutcome();
+  const good = getOutcome();
 
-  if(result.good) successCount++;
+  let label = good ? "Sheng Jiao ✅" : "Not Sheng Jiao ❌";
 
-  document.getElementById("resultText").innerHTML =
-    "Round "+round+": "+result.emoji+" "+result.label;
+  if(good) successCount++;
 
-  document.getElementById("resultImage").src=result.img;
-  document.getElementById("resultImage").style.display="block";
+  document.getElementById("resultText").innerText =
+    "Round "+round+": "+label;
 
-  document.getElementById("counter").innerText="Round: "+round+" / 3";
+  document.getElementById("counter").innerText =
+    "Round: "+round+" / 3";
 
-  if(round === maxRounds){
+  // 📝 記錄
+  const li=document.createElement("li");
+  li.textContent="Round "+round+" — "+label;
+  document.getElementById("recordList").appendChild(li);
 
-    document.getElementById("tossBtn").style.display="none";
-    document.getElementById("newBtn").style.display="inline-block";
+  if(round===maxRounds){
 
-    if(successCount === 3){
+    if(successCount===3){
       showSuccess();
-    }else{
-      document.getElementById("fail").style.display="block";
     }
+
+    round=maxRounds;
   }
 }
 
 function showSuccess(){
-
   document.getElementById("success").style.display="block";
 
-  const blessings = [
-    "🌸 Good Fortune",
-    "📚 Academic Success",
-    "💖 Happiness",
-    "💪 Health",
-    "🧧 Prosperity"
-  ];
+  totalWins++;
+  document.getElementById("score").innerText=totalWins;
 
-  const blessing = blessings[Math.floor(Math.random()*blessings.length)];
-
-  document.getElementById("blessing").innerText =
-    "Your Blessing: " + blessing;
-
-  document.getElementById("blessing").style.display="block";
-
-  // 📱 QR Code
-  const qr = document.getElementById("qr");
-  qr.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" +
-           encodeURIComponent(blessing);
-  qr.style.display="block";
+  startFireworks();
 }
 
-function activateLucky(){
-  luckyBoost = true;
-  alert("🍀 Lucky Mode Activated!");
+// 📱 Fullscreen kiosk
+function enterFullscreen(){
+  if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen();
+  }
 }
 
-function startNew(){
-  round = 0;
-  successCount = 0;
-  luckyBoost = false;
+//// 🎆 FIREWORKS ////
 
-  document.getElementById("resultText").innerHTML="Press Start Round";
-  document.getElementById("resultImage").style.display="none";
-  document.getElementById("counter").innerText="Round: 0 / 3";
-  document.getElementById("success").style.display="none";
-  document.getElementById("fail").style.display="none";
-  document.getElementById("blessing").style.display="none";
-  document.getElementById("qr").style.display="none";
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-  document.getElementById("tossBtn").style.display="inline-block";
-  document.getElementById("newBtn").style.display="none";
+let particles=[];
+
+function startFireworks(){
+  for(let i=0;i<120;i++){
+    particles.push({
+      x:canvas.width/2,
+      y:canvas.height/2,
+      angle:Math.random()*2*Math.PI,
+      speed:Math.random()*6+2
+    });
+  }
+  animateFireworks();
+}
+
+function animateFireworks(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.x+=Math.cos(p.angle)*p.speed;
+    p.y+=Math.sin(p.angle)*p.speed;
+    p.speed*=0.96;
+
+    ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+    ctx.fillRect(p.x,p.y,3,3);
+  });
+
+  particles=particles.filter(p=>p.speed>0.5);
+
+  if(particles.length>0){
+    requestAnimationFrame(animateFireworks);
+  }
 }
 </script>
 
