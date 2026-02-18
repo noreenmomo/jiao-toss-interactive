@@ -10,8 +10,6 @@ body{
   font-family:sans-serif;
   text-align:center;
   background:radial-gradient(circle,#fff6cc,#f4d03f);
-
-  /* ⭐ 改成可捲動 */
   min-height:100vh;
   overflow:auto;
   display:block;
@@ -120,7 +118,7 @@ canvas{
 
 <div id="fortune"></div>
 
-<!-- 🔊 只保留成功音效 -->
+<!-- 🔊 成功音效 -->
 <audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/215/215-preview.mp3"></audio>
 <audio id="celebrateSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
@@ -191,13 +189,17 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // 🔔 成功音
-  document.getElementById("successSound").play();
+  // 🔔 成功 Gong
+  const gong = document.getElementById("successSound");
+  gong.currentTime = 0;
+  gong.play().catch(()=>{});
 
-  // 🥳 慶祝音
+  // 🥳 慶祝音（延遲）
   setTimeout(()=>{
-    document.getElementById("celebrateSound").play();
-  },400);
+    const cheer = document.getElementById("celebrateSound");
+    cheer.currentTime = 0;
+    cheer.play().catch(()=>{});
+  }, 500);
 
   startFireworks();
 
