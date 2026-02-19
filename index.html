@@ -202,10 +202,9 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  // ⭐ 判斷畫面沒有 TRY AGAIN 按鈕才播放慶祝音
-  const btn=document.getElementById("actionBtn");
+  const btn = document.getElementById("actionBtn");
+  const celebrateSound = document.getElementById("celebrateSound");
 
-  // ⭐ 如果按鈕不是 TRY AGAIN → 代表成功
   if(btn.innerText !== "TRY AGAIN"){
     celebrateSound.currentTime = 0;
     celebrateSound.play().catch(()=>{});
