@@ -205,8 +205,9 @@ function showSuccess(){
   // ⭐ 判斷畫面沒有 TRY AGAIN 按鈕才播放慶祝音
   const btn=document.getElementById("actionBtn");
 
-  if(btn.style.display === "none"){
-    celebrateAudio.currentTime=0;
+  // ⭐ 如果按鈕不是 TRY AGAIN → 代表成功
+  if(btn.innerText !== "TRY AGAIN"){
+    celebrateAudio.currentTime = 0;
     celebrateAudio.play().catch(()=>{});
   }
 
