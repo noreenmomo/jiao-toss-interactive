@@ -14,14 +14,6 @@ body{
   padding:20px;
 }
 
-.instructions{
-  background:white;
-  padding:12px;
-  border-radius:10px;
-  margin:10px auto;
-  max-width:520px;
-}
-
 button{
   padding:1em 2em;
   font-size:1.2em;
@@ -35,9 +27,7 @@ button{
   transform:scale(0.5);
 }
 
-.reveal{
-  animation: revealSpin 0.7s forwards;
-}
+.reveal{ animation: revealSpin 0.7s forwards; }
 
 @keyframes revealSpin{
   from{opacity:0;transform:scale(0.3) rotate(0deg);}
@@ -71,16 +61,14 @@ button{
   transform-origin:top;
 }
 
-.scrollOpen{
-  animation: scrollOpenAnim 0.8s ease forwards;
-}
+.scrollOpen{ animation: scrollOpenAnim 0.8s ease forwards; }
 
 @keyframes scrollOpenAnim{
   from{transform:scaleY(0);}
   to{transform:scaleY(1);}
 }
 
-/* 🌸 花瓣 */
+/* 🧧 花瓣 */
 .petal{
   position:fixed;
   top:-20px;
@@ -90,10 +78,7 @@ button{
 }
 
 @keyframes fall{
-  to{
-    transform:translateY(110vh) rotate(360deg);
-    opacity:0;
-  }
+  to{ transform:translateY(110vh) rotate(360deg); opacity:0; }
 }
 
 canvas{
@@ -109,11 +94,6 @@ canvas{
 
 <h1>Blessing Card & Jiao Toss Lab</h1>
 
-<div class="instructions">
-<b>🎯 GOAL:</b> Get 3 Sheng Jiao to win<br>
-<b>🧧 WHAT IS SHENG JIAO:</b> One flat + one round<br>
-</div>
-
 <button id="actionBtn" onclick="playRound()">TOSS</button>
 
 <div id="resultText">Press TOSS</div>
@@ -121,7 +101,6 @@ canvas{
 
 <div id="counter">Round: 0 / 3</div>
 
-<!-- 📋 Result 清單 -->
 <div id="recordBox">
 <b>Round Results:</b>
 <ul id="recordList"></ul>
@@ -133,14 +112,9 @@ canvas{
 <div id="fortune"></div>
 
 <!-- 🔊 音效 -->
-<audio id="tossSound" preload="auto"
-src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
-
-<audio id="celebrateSound" preload="auto"
-src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-
-<audio id="bellSound" preload="auto"
-src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
+<audio id="tossSound" src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
+<audio id="celebrateSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+<audio id="bellSound" src="https://assets.mixkit.co/active_storage/sfx/2065/2065-preview.mp3"></audio>
 
 <canvas id="fireworks"></canvas>
 
@@ -184,7 +158,6 @@ function playRound(){
   document.getElementById("counter").innerText =
     "Round: "+round+" / 3";
 
-  /* 📋 記錄清單 */
   const li=document.createElement("li");
   li.textContent="Round "+round+" — "+result.label+" "+result.emoji;
   document.getElementById("recordList").appendChild(li);
@@ -194,7 +167,8 @@ function playRound(){
 
     if(successCount===3){
       showSuccess();
-      btn.style.display="none";
+      btn.innerText="PLAY AGAIN";
+      btn.onclick=resetGame;
     }else{
       document.getElementById("fail").style.display="block";
       btn.innerText="TRY AGAIN";
@@ -214,8 +188,9 @@ function resetGame(){
   document.getElementById("fail").style.display="none";
   document.getElementById("fortune").style.display="none";
 
+  particles=[];
+
   const btn=document.getElementById("actionBtn");
-  btn.style.display="inline-block";
   btn.innerText="TOSS";
   btn.onclick=playRound;
 }
@@ -264,7 +239,6 @@ function startFireworks(){
 
 function animateFireworks(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
   particles.forEach(p=>{
     p.x+=Math.cos(p.angle)*p.speed;
     p.y+=Math.sin(p.angle)*p.speed;
@@ -272,17 +246,16 @@ function animateFireworks(){
     ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
     ctx.fillRect(p.x,p.y,3,3);
   });
-
   particles=particles.filter(p=>p.speed>0.5);
   if(particles.length>0) requestAnimationFrame(animateFireworks);
 }
 
-/* 🌸 花瓣 */
+/* 🧧 花瓣 */
 function startPetals(){
   for(let i=0;i<25;i++){
     const petal=document.createElement("div");
     petal.className="petal";
-    petal.innerText="🌸";
+    petal.innerText="🧧";
     petal.style.left=Math.random()*100+"vw";
     petal.style.animationDuration=(3+Math.random()*3)+"s";
     document.body.appendChild(petal);
