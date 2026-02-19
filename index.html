@@ -202,12 +202,11 @@ function showSuccess(){
 
   document.getElementById("success").style.display="block";
 
-  const btn = document.getElementById("actionBtn");
-  const celebrateSound = document.getElementById("celebrateSound");
+  celebrateAudio.currentTime = 0;
+  celebrateAudio.volume = 0.9;
+  celebrateAudio.loop = false;
+  celebrateAudio.play().catch(()=>{});
 
-  if(btn.innerText !== "TRY AGAIN"){
-    celebrateSound.currentTime = 0;
-    celebrateSound.play().catch(()=>{});
   }
 
   startFireworks();
