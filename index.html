@@ -207,8 +207,8 @@ function showSuccess(){
 
   // ⭐ 如果按鈕不是 TRY AGAIN → 代表成功
   if(btn.innerText !== "TRY AGAIN"){
-    celebrateAudio.currentTime = 0;
-    celebrateAudio.play().catch(()=>{});
+    celebrateSound.currentTime = 0;
+    celebrateSound.play().catch(()=>{});
   }
 
   startFireworks();
