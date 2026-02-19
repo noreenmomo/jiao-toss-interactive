@@ -47,6 +47,15 @@ button{
 #success{font-size:2em;color:#e74c3c;display:none;}
 #fail{font-size:2em;color:#555;display:none;}
 
+#recordBox{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  margin:10px auto;
+  max-width:420px;
+  text-align:left;
+}
+
 /* 🧧 籤詩卷軸 */
 #fortune{
   font-size:1.8em;
@@ -60,7 +69,6 @@ button{
   display:none;
   transform:scaleY(0);
   transform-origin:top;
-  box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
 .scrollOpen{
@@ -113,6 +121,12 @@ canvas{
 
 <div id="counter">Round: 0 / 3</div>
 
+<!-- 📋 Result 清單 -->
+<div id="recordBox">
+<b>Round Results:</b>
+<ul id="recordList"></ul>
+</div>
+
 <div id="success">🎉 SUCCESS 🎉</div>
 <div id="fail">😅 TRY AGAIN</div>
 
@@ -125,7 +139,6 @@ src="https://assets.mixkit.co/active_storage/sfx/2071/2071-preview.mp3"></audio>
 <audio id="celebrateSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-<!-- 🔔 廟鐘聲 -->
 <audio id="bellSound" preload="auto"
 src="https://assets.mixkit.co/active_storage/sfx/218/218-preview.mp3"></audio>
 
@@ -171,14 +184,40 @@ function playRound(){
   document.getElementById("counter").innerText =
     "Round: "+round+" / 3";
 
+  /* 📋 記錄清單 */
+  const li=document.createElement("li");
+  li.textContent="Round "+round+" — "+result.label+" "+result.emoji;
+  document.getElementById("recordList").appendChild(li);
+
   if(round===maxRounds){
+    const btn=document.getElementById("actionBtn");
+
     if(successCount===3){
       showSuccess();
-      document.getElementById("actionBtn").style.display="none";
+      btn.style.display="none";
     }else{
       document.getElementById("fail").style.display="block";
+      btn.innerText="TRY AGAIN";
+      btn.onclick=resetGame;
     }
   }
+}
+
+function resetGame(){
+  round=0;
+  successCount=0;
+
+  document.getElementById("resultText").innerText="Press TOSS";
+  document.getElementById("counter").innerText="Round: 0 / 3";
+  document.getElementById("recordList").innerHTML="";
+  document.getElementById("success").style.display="none";
+  document.getElementById("fail").style.display="none";
+  document.getElementById("fortune").style.display="none";
+
+  const btn=document.getElementById("actionBtn");
+  btn.style.display="inline-block";
+  btn.innerText="TOSS";
+  btn.onclick=playRound;
 }
 
 function showSuccess(){
